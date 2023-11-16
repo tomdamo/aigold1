@@ -1,0 +1,29 @@
+Create a 3D environment containing interesting geometry. For this environment you'll bake a NavMesh. Make sure the environment contains stairs, ramp, moving objects/obstacles, walkable/unwalkable areas and contains an area that is connected exclusively using NavMesh links.
+
+In this environment, you can spawn NavMesh Agents by right clicking somewhere in the area. There are 2 types of agents and you can spawn. You can spawn more than 1 instance of both of them:
+
+    Regular agents,
+    Patrollers.
+
+When you have spawned an agent, you can left click it to select it. While you have an agent selected, if you click somewhere in the NavMesh, this position becomes the agents destination, and it will start moving towards it.  This is only the case for regular agents. For patrollers, while selected, you must pick 2 different points. The patroller then moves towards one of them, and when it has reached this destination, it will move towards the other. It continues this patrol until 2 new points have been selected. It will then start patrolling between those points.
+Required features:
+
+    Show in some way which agent is currently selected.
+    If there is an agent selected, and the player clicks that agent, it becomes unselected.
+    If an agent is selected, and the player clicks a different agent, the other agent becomes the selected agent.
+    Make the agent and patroller PreFabs (this will help you in code ;)).
+    When spawning agents, a simple key press or UI-element is allowed to switch between spawning regular agents or patrollers.
+    When spawning agents, spawn the agent at the position the player clicked. 
+
+To submit:
+
+    The Unity project, including all code & assets,
+    A working build. If you're able to submit a MacOS or Linux build (that you confirm works before submitting, I'm not your QA department ;)) that is greatly appreciated. Otherwise submit a regular Windows build. 
+
+If you hand in a compressed file or files, everything that isn’t a .zip file is not allowed.
+
+Please put your name AND studentnumber in the file you submit.
+
+If your submission does not contain the above, it will not be graded. 
+
+Good luck!

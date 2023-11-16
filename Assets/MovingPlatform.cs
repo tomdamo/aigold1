@@ -4,59 +4,43 @@ using UnityEngine;
 
 public class MovingPlatform : MonoBehaviour
 {
-    public Transform targetPoint; // The point where the platform will move
-    public float moveSpeed = 2f; // Speed at which the platform moves
-    public float waitTime = 1f; // Time to wait at each point
+    public float speed = 2.0f;
 
-    private Vector3 initialPosition; // Initial position of the platform
-    private bool moving; // Flag to check if the platform is currently moving
+    public Vector3 initialPosition;
+    private bool movingForward = true;
+    public Vector3 targetPosition;
 
-    void Start()
+    private void Start()
     {
         initialPosition = transform.position;
-        moving = false;
-        MoveToNextPoint();
+        targetPosition = transform.parent.GetChild(0).position;
     }
+
 
     void Update()
     {
-        if (!moving)
+        if (movingForward)
         {
-            // Wait at the current point for the specified time
-            Invoke("MoveToNextPoint", waitTime);
+            transform.position = Vector3.MoveTowards(
+                transform.position,
+                targetPosition,
+                speed * Time.deltaTime
+            );
         }
-    }
-
-    void MoveToNextPoint()
-    {
-        moving = true;
-        Vector3 targetPos = targetPoint.position;
-        StartCoroutine(MovePlatform(targetPos));
-    }
-
-    IEnumerator MovePlatform(Vector3 targetPos)
-    {
-        float elapsedTime = 0f;
-        Vector3 startingPos = transform.position;
-
-        while (elapsedTime < moveSpeed)
+        else
         {
-            transform.position = Vector3.Lerp(startingPos, targetPos, (elapsedTime / moveSpeed));
-            elapsedTime += Time.deltaTime;
-            yield return null;
+            transform.position = Vector3.MoveTowards(
+                transform.position,
+                initialPosition,
+                speed * Time.deltaTime
+            );
         }
 
-        transform.position = targetPos;
-        moving = false;
-    }
 
-    // For visualization purposes only, to see the platform's movement in the Scene view
-    void OnDrawGizmosSelected()
-    {
-        if (targetPoint != null)
+        if (Vector3.Distance(transform.position, targetPosition) < 0.01f ||
+            Vector3.Distance(transform.position, initialPosition) < 0.01f)
         {
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawLine(transform.position, targetPoint.position);
+            movingForward = !movingForward;
         }
     }
 }
