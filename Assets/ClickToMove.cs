@@ -27,6 +27,8 @@ public class ClickToMove : MonoBehaviour
     private void Start()
     {
         mainCamera = Camera.main;
+        currentMode.text = "agents";
+
         AgentMode = true;
     }
 
@@ -105,14 +107,16 @@ public class ClickToMove : MonoBehaviour
         // Handle right-click to spawn a new agent or patroller
         if (Input.GetKeyDown(KeyCode.A))
         {
-            AgentMode = true;
             Console.WriteLine("You can now spawn agents");
+            currentMode.text = "agents";
+            AgentMode = true;
+            
         }
         else if (Input.GetKeyDown(KeyCode.P))
         {
-            // Spawn a new patroller at the clicked position
-            AgentMode = false;
             Console.WriteLine("You can now spawn patrollers");
+            currentMode.text = "patrollers";
+            AgentMode = false;
         }
     }
 
