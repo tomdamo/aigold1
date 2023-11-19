@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -41,18 +42,20 @@ public class ClickToMove : MonoBehaviour
             {
                 if (hit.collider.CompareTag("Agent") || hit.collider.CompareTag("Patroller"))
                 {
-
-                    if (selectedAgent != null)
+                    if (hit.collider.GetComponent<NavMeshAgent>() == selectedAgent ||
+                        hit.collider.GetComponent<NavMeshAgent>() == selectedPatroller)
                     {
-                        selectedAgent.transform.localScale = defaultScale;
+                        // If the clicked agent or patroller is already selected, deselect
+                        DeselectAgentOrPatroller(hit.collider.GetComponent<NavMeshAgent>());
                     }
-                    if (selectedPatroller != null)
+                    else
                     {
-                        selectedPatroller.transform.localScale = defaultScale;
-
+                        // If a different agent or patroller is clicked, select it
+                        SelectAgentOrPatroller(hit.collider.GetComponent<NavMeshAgent>());
                     }
+                
 
-                    if (hit.collider.CompareTag("Agent"))
+                if (hit.collider.CompareTag("Agent"))
                     {
                         selectedAgent = hit.collider.GetComponent<NavMeshAgent>();
                         selectedAgent.transform.localScale = defaultScale * highlightScaleFactor;
@@ -126,6 +129,10 @@ public class ClickToMove : MonoBehaviour
             currentMode.text = "patrollers";
             AgentMode = false;
         }
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
     }
 
     // Spawns a new agent at the clicked position
@@ -163,4 +170,57 @@ public class ClickToMove : MonoBehaviour
             }
         }
     }
+
+    void DeselectAgentOrPatroller(NavMeshAgent agent)
+    {
+        if (agent == selectedAgent)
+        {
+            selectedAgent.transform.localScale = defaultScale; // Scale down the previously selected agent
+            selectedAgent = null;
+            isPatrollerSelected = false;
+            Debug.Log("Agent deselected!");
+        }
+        else if (agent == selectedPatroller)
+        {
+            selectedPatroller.transform.localScale = defaultScale; // Scale down the previously selected patroller
+            selectedPatroller = null;
+            isPatrollerSelected = false;
+            currentPatrollerController = null; // Reset the patroller controller
+            Debug.Log("Patroller deselected!");
+        }
+    }
+
+    void SelectAgentOrPatroller(NavMeshAgent agent)
+    {
+        if (agent.CompareTag("Agent"))
+        {
+            if (selectedAgent != null)
+            {
+                // Scale down the previously selected agent
+                selectedAgent.transform.localScale = defaultScale;
+            }
+            selectedAgent = agent;
+            selectedAgent.transform.localScale = defaultScale * highlightScaleFactor; // Scale up the newly selected agent
+            isPatrollerSelected = false;
+            Debug.Log("Agent selected!");
+        }
+        else if (agent.CompareTag("Patroller"))
+        {
+            if (selectedPatroller != null)
+            {
+                // Scale down the previously selected patroller
+                selectedPatroller.transform.localScale = defaultScale;
+            }
+            selectedPatroller = agent;
+            selectedPatroller.transform.localScale = defaultScale * highlightScaleFactor; // Scale up the newly selected patroller
+            isPatrollerSelected = true;
+            currentPatrollerController = agent.GetComponent<PatrollerController>();
+            if (currentPatrollerController == null)
+            {
+                Debug.LogError("PatrollerController component not found!");
+            }
+            Debug.Log("Patroller selected!");
+        }
+    }
+
 }
