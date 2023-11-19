@@ -14,10 +14,9 @@ public class ClickToMove : MonoBehaviour
     private Camera mainCamera;
 
     private NavMeshAgent selectedAgent;
+    private NavMeshAgent selectedPatroller;
     
     private bool isPatrollerSelected;
-    private NavMeshAgent selectedPatroller;
-    private List<Vector3> patrolPoints = new List<Vector3>();
     private PatrollerController currentPatrollerController;
 
     private bool AgentMode;
@@ -28,7 +27,6 @@ public class ClickToMove : MonoBehaviour
     {
         mainCamera = Camera.main;
         currentMode.text = "agents";
-
         AgentMode = true;
     }
 
@@ -58,6 +56,7 @@ public class ClickToMove : MonoBehaviour
                     {
                         selectedAgent = hit.collider.GetComponent<NavMeshAgent>();
                         selectedAgent.transform.localScale = defaultScale * highlightScaleFactor;
+                        isPatrollerSelected = false;
                         Debug.Log("Agent selected!");
                     }
                     else if (hit.collider.CompareTag("Patroller"))
@@ -65,30 +64,39 @@ public class ClickToMove : MonoBehaviour
                         selectedPatroller = hit.collider.GetComponent<NavMeshAgent>();
                         isPatrollerSelected = true;
                         selectedPatroller.transform.localScale = defaultScale * highlightScaleFactor;
+                        currentPatrollerController = hit.collider.GetComponent<PatrollerController>(); 
+                        if (currentPatrollerController == null)
+                        {
+                            Debug.LogError("PatrollerController component not found!");
+                        }
                         Debug.Log("Patroller selected!");
                     }
                 }
                 else if (hit.collider.CompareTag("Floor"))
                 {
-                    if (isPatrollerSelected && patrolPoints.Count < 2)
+                    if (isPatrollerSelected && currentPatrollerController.patrolPoints.Count < 2)
                     {
                         // Add patrol points for the selected patroller
-                        patrolPoints.Add(hit.point);
+                        currentPatrollerController.patrolPoints.Add(hit.point);
 
-                        if (patrolPoints.Count == 2)
+                        if (currentPatrollerController.patrolPoints.Count == 2)
                         {
                             // Set patrolling points for the patroller
                             PatrollerController patrollerController = selectedPatroller.GetComponent<PatrollerController>();
                             if (patrollerController != null)
                             {
-                                patrollerController.SetPatrolPoints(patrolPoints[0], patrolPoints[1]);
+                                patrollerController.SetPatrolPoints(currentPatrollerController.patrolPoints[0], currentPatrollerController.patrolPoints[1]);
                             }
                         }
                     }
                     else if (selectedAgent != null && !isPatrollerSelected) 
                     {
                         selectedAgent.SetDestination(hit.point);
+                        isPatrollerSelected = false;
+                        Debug.Log("agent walks to" + hit.point);
+
                     }
+
                 }
             }
         }

@@ -1,14 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class MovingPlatform : MonoBehaviour
+public class MovingPlatForm : MonoBehaviour
 {
     public float speed = 2.0f;
 
-    public Vector3 initialPosition;
+    private Vector3 initialPosition;
     private bool movingForward = true;
-    public Vector3 targetPosition;
+    private Vector3 targetPosition;
 
     private void Start()
     {
